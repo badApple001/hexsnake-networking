@@ -1,0 +1,44 @@
+{
+  "title": "hexsnake",
+  "packageName": "",
+  "startScene": "b2d6dcc7-a672-4376-aefb-7cd232ff2e2e",
+  "excludeScenes": [],
+  "includeSDKBox": false,
+  "orientation": {
+    "landscapeLeft": false,
+    "landscapeRight": false,
+    "portrait": true,
+    "upsideDown": false
+  },
+  "webOrientation": "portrait",
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "mergeStartScene": false,
+  "optimizeHotUpdate": false,
+  "md5Cache": false,
+  "encryptJs": false,
+  "xxteaKey": "9d4bf467-4444-ff",
+  "zipCompressJs": true,
+  "fb-instant-games": {},
+  "android": {
+    "packageName": "com.hellowd.hexsnake"
+  },
+  "ios": {
+    "packageName": ""
+  },
+  "mac": {
+    "packageName": ""
+  },
+  "win32": {},
+  "android-instant": {
+    "REMOTE_SERVER_ROOT": "http://192.168.3.120:7456/preview-android-instant/",
+    "host": "",
+    "packageName": "com.hg.test1",
+    "pathPattern": "",
+    "recordPath": "",
+    "scheme": "https",
+    "skipRecord": true
+  },
+  "appBundle": true,
+  "includeAnySDK": false
+}

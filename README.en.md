@@ -1,7 +1,7 @@
-# hexsnake-network
+# Hexsnake2
 
 #### Description
-hexsnake 联网版本
+原Hexsnake基础上增加摇杆
 
 #### Software Architecture
 Software architecture description

@@ -1,0 +1,37 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "play_rotate_loop",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 1,
+  "sample": 60,
+  "speed": 0.4,
+  "wrapMode": 2,
+  "curveData": {
+    "props": {
+      "angle": [
+        {
+          "frame": 0,
+          "value": 0
+        },
+        {
+          "frame": 0.3333333333333333,
+          "value": 30
+        },
+        {
+          "frame": 0.6666666666666666,
+          "value": -44
+        },
+        {
+          "frame": 0.8333333333333334,
+          "value": 10
+        },
+        {
+          "frame": 1,
+          "value": 0
+        }
+      ]
+    }
+  },
+  "events": []
+}

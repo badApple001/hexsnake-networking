@@ -1,7 +1,7 @@
-# hexsnake-network
+# Hexsnake2
 
 #### 介绍
-hexsnake 联网版本
+原Hexsnake基础上增加摇杆
 
 #### 软件架构
 软件架构说明

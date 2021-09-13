@@ -1,0 +1,72 @@
+{
+  "Kill you! Go get your revenge!": {
+    "en": "Kill you! Go get your revenge!",
+    "zh": "击败了你, 立即复仇!",
+    "ja": "あなたをころし殺して、すぐにふくしゅー復讐!",
+    "ko": "죽는다, 즉시 복수하겠다!",
+    "zhHant": "擊敗了你，立即復仇"
+  },
+  "kill": {
+    "en": "kill",
+    "zh": "击败",
+    "ja": "殺す",
+    "ko": "죽이다.",
+    "zhHant": "擊敗"
+  },
+  "area": {
+    "en": "area",
+    "zh": "面积",
+    "ja": "面積",
+    "ko": "지역",
+    "zhHant": "面積"
+  },
+  "revenge": {
+    "en": "revenge",
+    "zh": "复仇",
+    "ja": "復讐",
+    "ko": "보복 하 다.",
+    "zhHant": "復仇"
+  },
+  "Please Wait": {
+    "en": "Please Wait",
+    "zh": "请稍等",
+    "ja": "どうぞお待ちください",
+    "ko": "잠깐 만 기다 리 세 요.",
+    "zhHant": "請稍等"
+  },
+  "Player Matching": {
+    "en": "Player Matching",
+    "zh": "匹配玩家",
+    "ja": "プレイヤーマッチング",
+    "ko": "유저 매 칭",
+    "zhHant": "匹配玩家"
+  },
+  "Well done my friend": {
+    "en": "Well done my friend",
+    "zh": "做的不错我的朋友",
+    "ja": "私の友人",
+    "ko": "잘 했 어, 내 친구.",
+    "zhHant": "幹得不錯我的朋友"
+  },
+  "game over": {
+    "en": "game over",
+    "zh": "游戏结束",
+    "ja": "ゲームオーバー",
+    "ko": "게임 종료",
+    "zhHant": "游戲結束"
+  },
+  "High Scores": {
+    "en": "High Scores",
+    "zh": "最高分",
+    "ja": "ハイスコア",
+    "ko": "높 은 점수",
+    "zhHant": "最高分"
+  },
+  "replay": {
+    "en": "replay",
+    "zh": "重来",
+    "ja": "リプレイ",
+    "ko": "재방송",
+    "zhHant": "重來"
+  }
+}
