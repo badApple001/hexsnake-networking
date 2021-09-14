@@ -30,19 +30,26 @@ export default class NetCore {
 
 
     /* -----------------------------private method-------------------------------- */
-    private onopen(ev: Event){
+    private onopen(ev: Event) {
         Watcher.dispatch("server-linked");
     }
     private handler: {
         [key: string]: FuncSignature
     } = {};
-    private receive(result: MessageEvent){
+    private receive(result: MessageEvent) {
+        try {
+            let obj = JSON.parse(result.data);
+            let handle = this.handler[obj.type];
+            handle.functor.call(handle.caller, obj);
+        }
+        catch (e) {
+            console.log(`NetCore.receive erro: ${e}`);
+        }
+    }
+    private onclose(ev: CloseEvent) {
 
     }
-    private onclose(ev: CloseEvent){
-
-    }
-    private onerror(ev: Event){
+    private onerror(ev: Event) {
 
     }
     private createSocket(address) {
@@ -61,9 +68,9 @@ export default class NetCore {
 
 
     /* -----------------------------public method-------------------------------- */
-    public send( type:string, msgpkt:any ){
+    public send(type: string, msgpkt: any) {
 
     }
     /* -----------------------------public method-------------------------------- */
- 
+
 }
