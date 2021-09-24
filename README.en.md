@@ -1,36 +1,17 @@
-# Hexsnake2
+# Hexsnake2 - Networking
 
-#### Description
-原Hexsnake基础上增加摇杆
+#### Introduction
+Websocket-based frame synchronization demo
 
-#### Software Architecture
-Software architecture description
+#### In-game screenshots
+![](gitimg/login.png)
+![](gitimg/game1.png)
+![](gitimg/game2.png)
 
-#### Installation
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Instructions
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+#### Operating Environment
+Server： node.js
+Client:  cocos creator 2.2
 
 
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+#### Instructions for use
+Please consume at your discretion !!! 
