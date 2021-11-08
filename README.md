@@ -1,7 +1,7 @@
-# Hexsnake2 联网
+# 仿 圈地游戏 扩展网络版本
 
 #### 介绍
-websocket 帧同步应用
+主要用于websocket 帧同步学习及应用
 
 #### 游戏内截图
 ![](gitimg/login.png)
