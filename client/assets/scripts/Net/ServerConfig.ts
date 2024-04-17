@@ -2,6 +2,6 @@
 
 
 export let ServerConfig = {
-    ip : "ws://192.168.3.43:9527/",
+    ip : "ws://127.0.0.1:9527/",
 
 }

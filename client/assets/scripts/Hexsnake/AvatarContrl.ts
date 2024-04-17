@@ -1,17 +1,13 @@
 import { CCUtils } from "../Common/CCUtils";
 import { nameTemplateArray } from "../Common/DefineData";
-import FollowCamera from "../Common/FollowCamera";
 import MulLanguge from "../Common/MulLanguge";
 import { Toolkit } from "../Common/Toolkit";
 import Watcher, { HexsnakeEvent } from "../Common/Watcher";
-import { gameData } from "../Net/GameData";
-import NetCore from "../Net/NetCore";
+import { PlayerState } from "../TRPC/shared/game/state/PlayerState";
 import GameController from "./GameController";
 import { pathItem } from "./MapCreator";
-import Move from "./Move";
 import Player from "./Player";
 import Splixio, { RankItem } from "./Splixio";
-
 const { ccclass, property } = cc._decorator;
 
 
@@ -35,10 +31,6 @@ export default class AvatarContrl extends cc.Component {
     @property({ displayName: "显示nick的最近距离, 默认进入屏幕内开始显示" })
     dis: number = 0;
 
-    @property({ type: Splixio })
-    player: Splixio = null;
-    @property(cc.Prefab)
-    aiPrefab: cc.Prefab;
     @property(cc.Node)
     rankItemStage: cc.Node;
     @property({ type: [cc.Prefab] })
@@ -58,35 +50,15 @@ export default class AvatarContrl extends cc.Component {
     @property(cc.Node)
     tailStage: cc.Node = null;
 
+    @property(cc.Prefab)
+    playerprefab: cc.Prefab;
+
+    @property(cc.Node)
+    nickLayer:cc.Node;
+
     actors: Splixio[] = [];
 
     actorIndexs = [1, 2, 3, 4, 5, 6]; // 0 是玩家的配置
-
-    spawnAI(gid, pos, name, dir, skinID = gid) {
-
-        //if (this.actors.length >= 7) return;
-
-        let instance = cc.instantiate(this.aiPrefab);
-
-        this.node.addChild(instance);
-
-        let move = instance.getComponent(Move);
-        move.INIT(gid);
-        move.dir = cc.v2(dir.x, dir.y);
-        instance.angle = -90 + Math.atan2(dir.y, dir.x) * 180 / Math.PI;
-        instance.position = pos;
-
-        let t = instance.getComponent(Splixio);
-        t.gid = gid; //Toolkit.RandomInt(4);
-        t.skinID = skinID;
-        this.readConfig(t);//根据配置设置头像和拖尾
-        t.nickNode = this.createNickItem(false, name);//名称
-        this.createRankItem(t, this.actors.length);//排行榜
-        this.actors.push(t);//放进角色对象池
-
-        return t;
-    }
-
 
     posArr: cc.Vec2[] = [
         cc.v2(-2000 + 4000 / 3 * 0, -2000 + 4000 / 3 * 2), cc.v2(-2000 + 4000 / 3 * 1, -2000 + 4000 / 3 * 2), cc.v2(-2000 + 4000 / 3 * 2, -2000 + 4000 / 3 * 2),
@@ -130,7 +102,12 @@ export default class AvatarContrl extends cc.Component {
 
 
     playerMaxArea = 0;
+    private static _ins: AvatarContrl = null;
+    public static get Ins(): AvatarContrl {
+        return this._ins;
+    }
     onLoad() {
+        AvatarContrl._ins = this;
 
         //刷新面积
         this.playerMaxArea = 0; //parseFloat(Toolkit.getCookie("Hexsnake_max"));
@@ -152,7 +129,7 @@ export default class AvatarContrl extends cc.Component {
 
 
     FirstInteraction() {
-        this.player.move.startMove();
+        // this.player.move.startMove();
     }
 
     onDestroy() {
@@ -186,116 +163,108 @@ export default class AvatarContrl extends cc.Component {
             this.dis = Math.max(winSizePixels.width, winSizePixels.height);
         }
 
-        const loginData = gameData.loginData;
-        let x = loginData.pos[0];
-        let y = loginData.pos[1];
-        let _y = 53;
-        let _x = 92;
-        CC_DEBUG && console.log(`位置: ${x},${y}`);
-        this.player.node.setPosition(x * _x, y * _y);
-        CC_DEBUG && console.log(loginData);
-        FollowCamera.instance.pos(this.player.node.convertToWorldSpaceAR(cc.Vec2.ZERO));
-        this.player.node.active = false;
-        this.player.gid = loginData.gid;
-        this.player.skinID = loginData.skinID;
+
+        // const loginData = gameData.loginData;
+        // let x = loginData.pos[0];
+        // let y = loginData.pos[1];
+        // let _y = 53;
+        // let _x = 92;
+        // CC_DEBUG && console.log(`位置: ${x},${y}`);
+        // this.player.node.setPosition(x * _x, y * _y);
+        // CC_DEBUG && console.log(loginData);
+        // FollowCamera.instance.pos(this.player.node.convertToWorldSpaceAR(cc.Vec2.ZERO));
+        // this.player.node.active = false;
+        // this.player.gid = loginData.gid;
+        // this.player.skinID = loginData.skinID;
 
 
 
         Watcher.addEventListener(HexsnakeEvent.PathGridLoaded, this, () => {
-            this.player.node.active = true;
-            this.player.nickNode = this.createNickItem(true, loginData.name);//名称
-
-            let move = this.player.getComponent(Move)
-            move.INIT(loginData.gid);
-
-            //创建玩家
-            this.readConfig(this.player);//根据配置设置头像和拖尾
-            this.createRankItem(this.player);//排行榜
 
 
-            let player = this.player.getComponent(Player);
+            // this.player.node.active = true;
+            // this.player.nickNode = this.createNickItem(true, loginData.name);//名称
 
-            player.awake();
-            //this.player.tailVfx.enabled=false;
-            this.actors.push(this.player);//放进角色对象池
-            //同步一次格子
-            setTimeout(() => {
-                player.syncGrid();
-            }, 100);
+            // let move = this.player.getComponent(Move)
+            // move.INIT(loginData.gid);
 
-            this.initOtherPlayer(loginData);
+            // //创建玩家
+            // this.readConfig(this.player);//根据配置设置头像和拖尾
+            // this.createRankItem(this.player);//排行榜
+
+
+            // let player = this.player.getComponent(Player);
+
+            // player.awake();
+            // //this.player.tailVfx.enabled=false;
+            // this.actors.push(this.player);//放进角色对象池
+            // //同步一次格子
+            // setTimeout(() => {
+            //     player.syncGrid();
+            // }, 100);
+
+            // this.initOtherPlayer(loginData);
         });
 
-        this.maxArea = window['maxArea'] || 1.4;
+        // this.maxArea = window['maxArea'] || 1.4;
 
 
-        NetCore.instance.on("new-player", (e) => {
-            Toolkit.log(">>>>>>新玩家加入房间", "g", "black");
-            let msg: {
-                gid,
-                name,
-                skinID,
-                pos
-            } = e;
+        // NetCore.instance.on("new-player", (e) => {
+        //     Toolkit.log(">>>>>>新玩家加入房间", "g", "black");
+        //     let msg: {
+        //         gid,
+        //         name,
+        //         skinID,
+        //         pos
+        //     } = e;
 
-            this.spawnAI(msg.gid, cc.v2(msg.pos[0] * _x, msg.pos[1] * _y), msg.name, cc.v2(0, 1), msg.skinID);
-            Watcher.dispatch("newPlayerEnter", msg.gid, msg.name);
-        }, this);
-
-
-        NetCore.instance.on("exit-room", (msg) => {
-
-            let target = this.actors.find((actor: Splixio) => {
-                if (actor.gid === msg.gid) return true;
-            });
-            target && target.clear();
-        }, this);
-
-        NetCore.instance.on("death", (msg) => {
-
-            let killer = this.actors.find((actor: Splixio) => {
-                if (actor.gid === msg.killer) return true;
-            });
-
-            this.player.doDeath(killer);
-        }, this);
+        //     this.spawnAI(msg.gid, cc.v2(msg.pos[0] * _x, msg.pos[1] * _y), msg.name, cc.v2(0, 1), msg.skinID);
+        //     Watcher.dispatch("newPlayerEnter", msg.gid, msg.name);
+        // }, this);
 
 
-        NetCore.instance.on("kill", (msg) => {
+        // NetCore.instance.on("exit-room", (msg) => {
 
-            let target = this.actors.find((actor: Splixio) => {
-                if (actor.gid === msg.target) return true;
-            });
-            let killer = this.actors.find((actor: Splixio) => {
-                if (actor.gid === msg.killer) return true;
-            });
+        //     let target = this.actors.find((actor: Splixio) => {
+        //         if (actor.gid === msg.gid) return true;
+        //     });
+        //     target && target.clear();
+        // }, this);
 
-            target && target.doDeath(killer);
-        }, this);
+        // NetCore.instance.on("death", (msg) => {
+
+        //     let killer = this.actors.find((actor: Splixio) => {
+        //         if (actor.gid === msg.killer) return true;
+        //     });
+
+        //     this.player.doDeath(killer);
+        // }, this);
 
 
-        NetCore.instance.on("enc", (msg) => {
+        // NetCore.instance.on("kill", (msg) => {
 
-            let target = this.actors.find((actor: Splixio) => {
-                if (actor.gid === msg.gid) return true;
-            });
+        //     let target = this.actors.find((actor: Splixio) => {
+        //         if (actor.gid === msg.target) return true;
+        //     });
+        //     let killer = this.actors.find((actor: Splixio) => {
+        //         if (actor.gid === msg.killer) return true;
+        //     });
 
-            target && this.setGrid(target, msg);
-            target.node.position = msg.pos;
-        }, this);
+        //     target && target.doDeath(killer);
+        // }, this);
+
+
+        // NetCore.instance.on("enc", (msg) => {
+
+        //     let target = this.actors.find((actor: Splixio) => {
+        //         if (actor.gid === msg.gid) return true;
+        //     });
+
+        //     target && this.setGrid(target, msg);
+        //     target.node.position = msg.pos;
+        // }, this);
     }
 
-    initOtherPlayer(d) {
-
-        let o = d.otherPlayer;
-        for (let _ in o) {
-            if (o[_].gid != this.player.gid) {
-                let data = o[_];
-                let spx = this.spawnAI(data.gid, data.pos, data.name, data.dir);
-                this.setGrid(spx, data);
-            }
-        }
-    }
 
     setGrid(splix: Splixio, d) {
 
@@ -313,12 +282,30 @@ export default class AvatarContrl extends cc.Component {
 
     }
 
+    //创建玩家
+    createPlayer(state: PlayerState): Player {
+        let instance = cc.instantiate(this.playerprefab);
+        this.node.addChild(instance);
+        let p = instance.getComponent(Player);
+        let s = instance.getComponent(Splixio);
+        //皮肤信息
+        s.skinID = state.skinID;
+        s.flag = state.id;
+        //拖尾
+        this.createTail(s);
+        //名称组件
+        s.nickNode = this.createNickItem(state.player_name)
+        //排行榜
+        this.createRankItem(s, this.actors.length);
+        //放进角色对象池
+        this.actors.push(s);
+        return p;
+    }
 
-    maxArea = 1.4;
-    //读取配置
-    readConfig(actor: Splixio) {
+    //创建拖尾
+    createTail(actor: Splixio) {
 
-        let config = GameController.instance.actorConfig[actor.skinID];
+        let config = GameController.Ins.actorConfig[actor.skinID];
         //拖尾
         actor.tail = cc.instantiate(config.tailPrefab);
         this.tailStage.addChild(actor.tail, undefined, `${this.node.name}_tail`);
@@ -345,7 +332,7 @@ export default class AvatarContrl extends cc.Component {
         let item = new RankItem();
         actor.rankItem = item;
 
-        item.node = cc.instantiate(this.rankItemPrefab[actor.gid]);
+        item.node = cc.instantiate(this.rankItemPrefab[actor.flag]);
         item.name = CCUtils.FindChildComponentHelper(item.node, "name", cc.Label);
         rankIndex < 3 && this.rankItemStage.addChild(item.node);
         item.node.zIndex = rankIndex;
@@ -356,11 +343,10 @@ export default class AvatarContrl extends cc.Component {
         item.setSize(0);
     }
 
-
     //创建一个名称item
-    createNickItem(isPlayer = false, name = '') {
+    createNickItem(name = '') {
         let node = cc.instantiate(this.nickPref);
-        this.node.addChild(node);
+        this.nickLayer.addChild(node);
 
         node.getComponentInChildren(cc.Label).string = name;
         node.name = name;
@@ -368,7 +354,6 @@ export default class AvatarContrl extends cc.Component {
         this.nickItemPool.push(node);
         return node;
     }
-
 
     //蛇蛇死亡了
     onSnakeDeath(splix: Splixio, beKiller: Splixio) {
@@ -406,7 +391,7 @@ export default class AvatarContrl extends cc.Component {
     }
 
 
-    //排行榜进行一次洗牌
+    //排行榜进行一次排序
     sortRank(caller: Splixio) {
 
         //交换指针

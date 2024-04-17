@@ -1,9 +1,5 @@
-import { ActorColliderTag } from "../Common/DefineData";
-import Watcher, { HexsnakeEvent } from "../Common/Watcher";
-import GameController from "./GameController";
 import { pathItem } from "./MapCreator";
-import Player from "./Player";
-import Splixio, { RankItem } from "./Splixio";
+import Splixio from "./Splixio";
 
 
 

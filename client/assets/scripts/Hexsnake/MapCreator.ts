@@ -202,42 +202,42 @@ export default class MapCreator extends cc.Component {
 
     // //只显示以玩家为中心的九个底图格子
     // update(dt: number) {
-
-    //     //玩家位置大于一个底图格子的时候 
-    //     if (this.player.getPosition().sub(this.playerLast).mag() > this.gridSize.mag() * 0.5) {
-
-
-    //         //刷新记录
-    //         this.playerLast.x = this.player.position.x;
-    //         this.playerLast.y = this.player.position.y;
-
-    //         //中心下标
-    //         let _x = Math.fround(this.playerLast.x / this.gridSize.x);
-    //         let _y = Math.fround(this.playerLast.y / this.gridSize.y);
-
-    //         //遍历底图格子
-    //         let grid: cc.Node = null;
-    //         for (let i in this.mapGrid) {
-
-    //             for (let j in this.mapGrid[i]) {
-
-    //                 grid = this.mapGrid[i][j];
-    //                 if (!(grid instanceof cc.Node)) break;
-
-    //                 let _i = parseInt(i);
-    //                 let _j = parseInt(j);
-
-    //                 //仅激活以玩家为中心的九个格子
-    //                 grid.active = _i >= _x - 2 && _i <= _x + 2 && _j >= _y - 2 && _j <= _y + 2;
-    //             }
-    //         }
-
+    //     if (!this.player) {
+    //         return;
     //     }
+        
+    //     //玩家位置大于一个底图格子的时候 
+    //     // if (this.player.getPosition().sub(this.playerLast).mag() > this.gridSize.mag() * 0.5) {
+
+
+    //     //     //刷新记录
+    //     //     this.playerLast.x = this.player.position.x;
+    //     //     this.playerLast.y = this.player.position.y;
+
+    //     //     //中心下标
+    //     //     let _x = Math.fround(this.playerLast.x / this.gridSize.x);
+    //     //     let _y = Math.fround(this.playerLast.y / this.gridSize.y);
+
+    //     //     //遍历底图格子
+    //     //     let grid: cc.Node = null;
+    //     //     for (let i in this.mapGrid) {
+
+    //     //         for (let j in this.mapGrid[i]) {
+
+    //     //             grid = this.mapGrid[i][j];
+    //     //             if (!(grid instanceof cc.Node)) break;
+
+    //     //             let _i = parseInt(i);
+    //     //             let _j = parseInt(j);
+
+    //     //             //仅激活以玩家为中心的九个格子
+    //     //             grid.active = _i >= _x - 2 && _i <= _x + 2 && _j >= _y - 2 && _j <= _y + 2;
+    //     //         }
+    //     //     }
+
+    //     // }
 
     // }
-
-
-
 
     onLoad() {
         //初始化
@@ -497,7 +497,7 @@ export class pathItem {
         current.node.position = current._position.clone();
 
         //更新
-        GameController.instance.mapLoadProgress(pathItem.sumPathNodeNum - pathItem.reserveItem.length, pathItem.sumPathNodeNum, pathItem.reserveItem.length == 0);
+        GameController.Ins.mapLoadProgress(pathItem.sumPathNodeNum - pathItem.reserveItem.length, pathItem.sumPathNodeNum, pathItem.reserveItem.length == 0);
         //实例化成功
         return true;
     }

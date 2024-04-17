@@ -1,6 +1,11 @@
+import FollowCamera from "../Common/FollowCamera";
 import MulLanguge from "../Common/MulLanguge";
-import { Toolkit } from "../Common/Toolkit";
 import Watcher, { HexsnakeEvent } from "../Common/Watcher";
+import GameManager from "../TRPC/GameManager";
+import { gameConfig } from "../TRPC/shared/game/gameConfig";
+import AvatarContrl from "./AvatarContrl";
+import MonsterLocation from "./MonsterLocation";
+import Player from "./Player";
 
 const { ccclass, property } = cc._decorator;
 
@@ -62,6 +67,19 @@ export default class GameController extends cc.Component {
     @property({ type: [cc.SpriteFrame] })
     loadSps: cc.SpriteFrame[] = [];
 
+    @property(cc.AudioSource)
+    stepAudioSource: cc.AudioSource;
+
+    @property(cc.Node)
+    playerRoot: cc.Node;
+
+
+    @property(MonsterLocation)
+    ml:MonsterLocation;
+
+    private playerEntitys: Map<number, Player> = new Map<number, Player>();
+    private selfSpeed: cc.Vec2 = new cc.Vec2(0, 0);
+
 
     refreshKill(count: number) {
         this.kill.string = `x${count}`;
@@ -101,9 +119,9 @@ export default class GameController extends cc.Component {
     }
 
     maxKillCount = 0;
-    public static instance: GameController = null;
+    public static Ins: GameController = null;
     onLoad() {
-        GameController.instance = this;
+        GameController.Ins = this;
 
 
         let manager = cc.director.getCollisionManager();
@@ -122,13 +140,9 @@ export default class GameController extends cc.Component {
     audioDict: { [k: string]: cc.AudioClip } = {};
     start() {
 
-        //Playable.INIT();
-        //Playable.READY();
-
         for (let clip of this.audioCache) {
             this.audioDict[clip.name] = clip;
         }
-
 
 
 
@@ -186,14 +200,71 @@ export default class GameController extends cc.Component {
 
     public static playEffect(name: string, loop = false) {
 
-        let clip = GameController.instance.audioDict[name];
+        let clip = GameController.Ins.audioDict[name];
         if (clip != null) {
             cc.audioEngine.playEffect(clip, loop);
         }
     }
 
 
+    onJoystickEvent(dir: cc.Vec2) {
+        console.log(dir);
+    }
 
+
+    protected update(dt: number): void {
+
+        GameManager.Ins.localTimePast();
+
+        // Send Inputs
+        if (this.selfSpeed && this.selfSpeed.magSqr()) {
+            this.selfSpeed.normalize().mulSelf(gameConfig.moveSpeed);
+            GameManager.Ins.sendClientInput({
+                type: 'PlayerMove',
+                speed: {
+                    x: this.selfSpeed.x,
+                    y: this.selfSpeed.y
+                },
+                dt: dt
+            })
+        }
+
+        this.updatePlayers();
+    }
+
+    updatePlayers() {
+        let playerStates = GameManager.Ins.state.players;
+        let now = GameManager.Ins.state.now;
+        for (let playerState of playerStates) {
+            let player = this.playerEntitys.get(playerState.id);
+            // 场景上还没有这个 Player，新建之
+            if (!player) {
+                player = AvatarContrl.Ins.createPlayer(playerState)
+                let isSelf = playerState.id === GameManager.Ins.selfPlayerId;
+                this.playerEntitys.set(playerState.id, player)
+                player.init(playerState, isSelf)
+
+                // 摄像机拍摄自己
+                if (isSelf) {
+                    FollowCamera.Ins.pos(player.node.convertToWorldSpaceAR(cc.Vec2.ZERO));
+                    FollowCamera.Ins.target = player.node;
+                    this.ml.player = player.node;
+                }
+            }
+
+            // 根据最新状态，更新 Player 表现组件
+            player.updateState(playerState, now);
+        }
+
+        // Clear left players
+        for (let i = this.playerRoot.children.length - 1; i > -1; --i) {
+            let player = this.playerRoot.children[i].getComponent(Player);
+            if (!GameManager.Ins.state.players.find(v => v.id === player.playerId)) {
+                player.node.removeFromParent();
+                this.playerEntitys.delete(player.playerId);
+            }
+        }
+    }
 
     onDestroy() {
         Watcher.removeAllListener(this);

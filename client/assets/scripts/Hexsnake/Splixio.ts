@@ -2,9 +2,7 @@ import { ActorColliderTag } from "../Common/DefineData";
 import Watcher, { HexsnakeEvent } from "../Common/Watcher";
 import GameController from "./GameController";
 import { pathItem } from "./MapCreator";
-import Move from "./Move";
 import Player from "./Player";
-
 
 const { ccclass, property } = cc._decorator;
 
@@ -13,7 +11,7 @@ export default class Splixio extends cc.Component {
 
 
     @property({ displayName: "圈地的标记" })
-    gid: number = 0;
+    flag: number = 0;
 
     skinID = 0;
     //格子图标
@@ -32,17 +30,14 @@ export default class Splixio extends cc.Component {
     rankItem: RankItem = null;
     nickNode: cc.Node = null;
 
-    move:Move = null;
+    // move:Move = null;
 
     audioCtr: cc.AudioSource = null;
 
-    player:Player = null;
     start() {
-        this.move = this.node.getComponent(Move);
-        this.player = this.getComponent(Player);
-        this.isPlayer = this.player != null;
-        this.audioCtr = this.getComponent(cc.AudioSource);
-        this.node.getChildByName("Direction").active = this.isPlayer;
+        // this.move = this.node.getComponent(Move);
+        // this.isPlayer = this.player != null;
+        // this.audioCtr = this.getComponent(cc.AudioSource);
     }
 
     update(dt) {
@@ -70,26 +65,26 @@ export default class Splixio extends cc.Component {
                     let first = item == this.preFullNode[0];
 
                     //圈地
-                    if (!this.applyLock && (first || (item.state == 1 && item.flag == this.gid))) {
+                    if (!this.applyLock && (first || (item.state == 1 && item.flag == this.flag))) {
                         this.applyLock = true;
 
                         this.apply();
 
                     }   //别人的尾巴
-                    else if (item.state == 0 && item.flag != this.gid) {
+                    else if (item.state == 0 && item.flag != this.flag) {
 
                         !item.spliter.isPlayer && this.killOther(other, item);
                         this.reserver(item);
 
                     }  //别人的领域
-                    else if (item.state == 1 && item.flag != this.gid) {
+                    else if (item.state == 1 && item.flag != this.flag) {
                         item.spliter.replace(item);
 
                         //
                         this.reserver(item);
 
                     }
-                    else if (item.flag != this.gid) {
+                    else if (item.flag != this.flag) {
 
                         //走出自己的领域
                         this.applyLock = false;
@@ -108,7 +103,7 @@ export default class Splixio extends cc.Component {
          
             //撞墙死亡
             //this.doDeath(null); 
-            this.isPlayer && this.move.SEND('wall',{});
+            // this.isPlayer && this.move.SEND('wall',{});
         }
     }
 
@@ -191,7 +186,7 @@ export default class Splixio extends cc.Component {
             return this.fill(item);
         }
 
-        this.isPlayer && !this.audioCtr.isPlaying && this.audioCtr.play();
+        this.isPlayer && this.audioCtr &&  !this.audioCtr.isPlaying && this.audioCtr.play();
 
         this.preFullNode.push(item);
         item.spliter = this;
@@ -200,7 +195,7 @@ export default class Splixio extends cc.Component {
         item.node.width = 66;
         item.node.height = 58;
         item.node.opacity = 0;
-        item.flag = this.gid;//标记领域
+        item.flag = this.flag;//标记领域
         tween && cc.tween(item.node).to(0.4, { opacity: 26 }).start();
     }
 
@@ -211,7 +206,7 @@ export default class Splixio extends cc.Component {
         item.spliter = this;
         item.state = 1; //实体化
         item.sprite.spriteFrame = this.gridIcon;
-        item.flag = this.gid;//标记领域
+        item.flag = this.flag;//标记领域
         item.node.opacity = 127;
 
         if(tween){
@@ -241,11 +236,11 @@ export default class Splixio extends cc.Component {
         for (let item of this.preFullNode) {
 
             pair = temp[item._yIndex];
-            if (pair == null && item.flag == this.gid) {
+            if (pair == null && item.flag == this.flag) {
                 //建表
                 temp[item._yIndex] = [item,item];
             }
-            else if (null != pair && item.flag == this.gid) {
+            else if (null != pair && item.flag == this.flag) {
 
                 if (item._xIndex < pair[0]._xIndex)
                     pair[0] = item;
@@ -265,7 +260,7 @@ export default class Splixio extends cc.Component {
                 let k = `p_${i}_${pair[0]._yIndex}`;
                 let item = pathItem.tryMap(k);
 
-                if (null != item && (item.state == 0 || this.gid != item.flag)) {
+                if (null != item && (item.state == 0 || this.flag != item.flag)) {
                     this.fill(item);
                 }
 
@@ -288,7 +283,7 @@ export default class Splixio extends cc.Component {
         this.isPlayer && GameController.playEffect("_success");
 
         //公告圈地
-        this.isPlayer && this.player.notifyGrid();
+        // this.isPlayer && this.player.notifyGrid();
     }
 
 
@@ -301,13 +296,13 @@ export default class Splixio extends cc.Component {
         if (this.isPlayer) {
             
             ++this.killCount;
-            GameController.instance.refreshKill(this.killCount);
+            GameController.Ins.refreshKill(this.killCount);
             //杀敌音效
             GameController.playEffect("kill");
 
-            this.move.SEND('kill',{
-                gid:item.spliter.gid         
-            });
+            // this.move.SEND('kill',{
+            //     gid:item.spliter.gid         
+            // });
         }
        
         // item.spliter.doDeath(this);

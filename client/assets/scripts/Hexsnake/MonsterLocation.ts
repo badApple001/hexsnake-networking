@@ -1,9 +1,6 @@
 import Watcher, { HexsnakeEvent } from "../Common/Watcher";
-import AvatarContrl from "./AvatarContrl";
-import Splixio from "./Splixio";
 
 const { ccclass, property } = cc._decorator;
-
 
 
 
@@ -70,7 +67,7 @@ export default class MonsterLocation extends cc.Component {
 
     update(dt) {
 
-        if (!this.gameState) return;
+        if (!this.gameState || !this.player) return;
 
         const halfSize = this.halfSize;
         const actors = this.avatarLayer.children;

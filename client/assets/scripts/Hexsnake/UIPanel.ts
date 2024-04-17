@@ -18,9 +18,6 @@ export default class UIPanel extends cc.Component {
 
     @property({ type: Joystick })
     joystick: Joystick;
-    @property({ type: Player })
-    player: Player;
-
 
     @property(cc.Label)
     beKiller: cc.Label;
@@ -83,7 +80,7 @@ export default class UIPanel extends cc.Component {
 
     start() {
 
-        this.player.getComponent(Move).enabled = false;
+        // this.player.getComponent(Move).enabled = false;
         this.node.on(cc.Node.EventType.TOUCH_START, this.firstInteraction, this);
         this.killnotic.active = false;
 
@@ -99,7 +96,7 @@ export default class UIPanel extends cc.Component {
         Watcher.addEventListener(HexsnakeEvent.GameOverEvent, this, this.gameOver);
 
         let newPlayerNode = this.newPlayerNode;
-        let configs = GameController.instance.actorConfig;
+        let configs = GameController.Ins.actorConfig;
         Watcher.addEventListener("newPlayerEnter", this, (gid, name) => {
 
 
@@ -122,11 +119,8 @@ export default class UIPanel extends cc.Component {
 
     gameOver() {
 
-        let splix = this.player.getComponent(Splixio);
-        splix.node.active = false;
-
-
-       // Playable.END();//试玩结束
+        // let splix = this.player.getComponent(Splixio);
+        // splix.node.active = false;
         this.showEndPanel();
     }
 
@@ -195,14 +189,14 @@ export default class UIPanel extends cc.Component {
 
         //发送玩家首次互动事件
         Watcher.dispatch(HexsnakeEvent.FirstInteraction);
-        this.player.getComponent(Move).enabled = true;
+        // this.player.getComponent(Move).enabled = true;
         this.starPanel.removeFromParent();
 
         //注册摇杆事件
-        let handler = CCUtils.RegistHandler(this.player.node, "Player", "onFollowTarget");
+        let handler = CCUtils.RegistHandler(GameController.Ins.node, "GameController", "onJoystickEvent");
         this.joystick.onBegin.push(handler);
         this.joystick.onMove.push(handler);
-
+        GameController.Ins.onJoystickEvent(cc.v2(0,1));
     }
 
     //_time = 0;
